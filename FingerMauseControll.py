@@ -73,15 +73,12 @@ while True:
             avg_index_finger_y = sum(p[1] for p in index_finger_history) // len(index_finger_history)
 
             # Move the mouse cursor to the average position
-            #print(distancehand)
             if distancehand > 0.3: # if index finger open
                 inverted_x = screen_width - (avg_index_finger_x * 4)
                 pyautogui.moveTo(inverted_x*2, avg_index_finger_y*3, 0.1,tween=pyautogui.easeInExpo)
 
                 # Perform a click if the distance between the fingers is below a threshold
-                #print(distanceclick)
                 if distanceclick < ClickSensetivity:
-                    #print("Clicked")
                     pyautogui.mouseDown()
                     time.sleep(0.1)
                     pyautogui.mouseUp()
