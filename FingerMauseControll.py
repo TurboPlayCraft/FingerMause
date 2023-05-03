@@ -8,7 +8,8 @@ import time
 SMOOTHING_WINDOW_SIZE = 2
 
 #PlayerMode
-PlayerMode = True
+Show = False
+PlayerMode = False
 OnlyUp = True
 
 #Sensetivity
@@ -134,6 +135,6 @@ while True:
                         time.sleep(1)
 
             
-
-    #cv2.imshow("Image", img)
-    #cv2.waitKey(1)
+    if Show:
+        cv2.imshow("Image", img)
+        cv2.waitKey(1)
