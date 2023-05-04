@@ -2,6 +2,8 @@ import cv2
 import mediapipe as mp
 import pyautogui
 from collections import deque
+from Notification import *
+import tkinter as tk
 import time
 
 # Constants
@@ -9,7 +11,7 @@ SMOOTHING_WINDOW_SIZE = 2
 
 #PlayerMode
 Show = False
-PlayerMode = False
+PlayerMode = True
 OnlyUp = True
 
 #Sensetivity
@@ -20,11 +22,15 @@ ClickSensetivity = 0.04
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+pyautogui.FAILSAFE = False
 pyautogui.PAUSE = 0
 
 # Get screen size
 screen_width, screen_height = pyautogui.size()
-pyautogui.FAILSAFE = False
+
+# create a hidden root window
+root = tk.Tk()
+root.withdraw()
 
 # Set up MediaPipe hands
 mpHands = mp.solutions.hands
@@ -95,30 +101,31 @@ while True:
             if PlayerMode:
                 #if hands is up in air
                 if OnlyUp:
-                    if wrist_y < 300:
-                        #if hand moves right
-                        if prew_wrist_x == None:
-                            prew_wrist_x = wrist_x
-                        if stophand1 > 0.4 and stophand2 > 0.4 and stophand3 > 0.3: #Pause
-                            print("pause")
-                            pyautogui.press('space')
-                            time.sleep(2)
-                        elif stophand1 > 0.4 and stophand2 > 0.4:
-                            print('hand moved right')     
-                            pyautogui.keyDown('shift')
-                            pyautogui.keyDown('n')
-                            time.sleep(2)
-                            pyautogui.keyUp('n')
-                            pyautogui.keyUp('shift')
-                        elif index_finger.x < wrist.x and stophand2 < 0.6: #Right
-                                print("right")
-                                pyautogui.press('right')
-                                time.sleep(1)
-                        elif index_finger.x > wrist.x and stophand2 < 0.6: #Left
-                            print("left")  
-                            pyautogui.press('left')
-                            time.sleep(1)
-                        prew_wrist_x = wrist_x
+                    minHight = 300
+                else:
+                    minHight = 1000
+
+                if wrist_y < minHight:
+                    if stophand1 > 0.4 and stophand2 > 0.4 and stophand3 > 0.3: #Pause
+                        print("pause")
+                        pyautogui.press('space')
+                        time.sleep(2)
+                    elif stophand1 > 0.4 and stophand2 > 0.4:
+                        print('Next >>')     
+                        pyautogui.keyDown('shift')
+                        pyautogui.keyDown('n')
+                        time.sleep(2)
+                        pyautogui.keyUp('n')
+                        pyautogui.keyUp('shift')
+                    elif index_finger.x < wrist.x and stophand2 < 0.6: #Right
+                        print("right >")
+                        pyautogui.press('right')
+                        #show_notification(root,"Notification Right", "Right")
+                        time.sleep(1)
+                    elif index_finger.x > wrist.x and stophand2 < 0.6: #Left
+                        print("< left")  
+                        pyautogui.press('left')
+                        time.sleep(1)
             else:
                 # Move the mouse cursor to the average position
                 if distancehand > 0.3: # if index finger open
