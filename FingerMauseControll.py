@@ -86,6 +86,9 @@ def process_frame():
             color2 = (0,distanceclick* 255,255 - (distanceclick*255))
             color3 = (0,distanceDoubleClick* 255,255 - (distanceDoubleClick*255))
             cv2.line(img, (index_finger_x, index_finger_y), (wrist_x, wrist_y), color1, 2)
+            cv2.line(img, (wrist_x, wrist_y), (index_finger_x, index_finger_y), color3, 2)
+            cv2.line(img, (wrist_x, wrist_y), (ring_finger_x, ring_finger_y), color3, 2)
+            cv2.line(img, (wrist_x, wrist_y), (middle_finger2_x, middle_finger2_y), color3, 2)
             cv2.line(img, (thumb_x, thumb_y), (middle_finger_x, middle_finger_y), color2, 2)
             cv2.line(img, (thumb_x, thumb_y), (middle_finger2_x, middle_finger2_y), color3, 2)
 
