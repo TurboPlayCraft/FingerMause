@@ -43,9 +43,17 @@ mpDraw = mp.solutions.drawing_utils
 index_finger_history = deque(maxlen=SMOOTHING_WINDOW_SIZE)
 prew_wrist_x = None
 
+# TIMER
+timer = 0
+def settimer(timervalue):
+    global timer 
+    timer = timervalue
+
 def process_frame():
     success, img = cap.read()
-
+    global timer
+    timer-=1
+    print(timer)
     # Convert the image to RGB for processing
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
@@ -112,13 +120,13 @@ def process_frame():
                     minHight = 1000
 
                 if wrist_y < minHight:
-                    if stophand1 > PoseRecSensetivity and stophand2 > PoseRecSensetivity and stophand3 > PoseRecSensetivity: #Pause
+                    if stophand1 > PoseRecSensetivity and stophand2 > PoseRecSensetivity and stophand3 > PoseRecSensetivity and timer<1: #Pause
                         show_notification(root,"Notification space", "Pause")
                         root.update()
                         print("pause")
                         pyautogui.press('space')
-                        time.sleep(2)
-                    elif stophand1 > PoseRecSensetivity and stophand2 > PoseRecSensetivity:
+                        settimer(30)
+                    elif stophand1 > PoseRecSensetivity and stophand2 > PoseRecSensetivity and timer<1:
                         show_notification(root,"Notification Next", "Next")
                         root.update()
                         print('Next >>')     
@@ -127,19 +135,19 @@ def process_frame():
                         time.sleep(0.1)
                         pyautogui.keyUp('n')
                         pyautogui.keyUp('shift')
-                        time.sleep(2)
-                    elif index_finger.x < wrist.x and stophand2 < 0.6: #Right   
+                        settimer(50)
+                    elif index_finger.x < wrist.x and stophand2 < 0.6 and timer<1: #Right   
                         show_notification(root,"Notification Right", "Right")
                         root.update()
                         print("right >")
                         pyautogui.press('right')
-                        time.sleep(0.5)
-                    elif index_finger.x > wrist.x and stophand2 < 0.6: #Left 
-                        show_notification(root,"Notification Left", "Left")
+                        settimer(10)
+                    elif index_finger.x > wrist.x and stophand2 < 0.6 and timer<1: #Left 
+                        show_notification(root,"Notification Left", "Left")      
                         root.update()
                         print("< left")  
                         pyautogui.press('left')
-                        time.sleep(0.5)
+                        settimer(10)
             else:
                 # Move the mouse cursor to the average position
                 if distancehand > 0.3: # if index finger open
@@ -147,13 +155,13 @@ def process_frame():
                     pyautogui.moveTo(inverted_x*2, avg_index_finger_y*4, 0.1,tween=pyautogui.easeInExpo)
 
                     # Perform a click if the distance between the fingers is below a threshold
-                    if distanceclick < ClickSensetivity:
+                    if distanceclick < ClickSensetivity and timer<1:
                         pyautogui.mouseDown()
-                        time.sleep(1)
+                        settimer(20)
                         pyautogui.mouseUp()
-                    elif distanceDoubleClick < ClickSensetivity:
+                    elif distanceDoubleClick < ClickSensetivity and timer<1:
                         pyautogui.doubleClick()
-                        time.sleep(1)
+                        settimer(20)
     if Show:
         cv2.imshow("Image", img)
         cv2.waitKey(1)
