@@ -6,17 +6,19 @@ from Notification import *
 import tkinter as tk
 import time
 
-# Constants
-SMOOTHING_WINDOW_SIZE = 2
-
 #PlayerMode
 Show = False
 PlayerMode = True
 OnlyUp = True
 
-#Sensetivity
+#MAUSEMODE Sensetivity
 MauseFingerSensetivity = 0.3 
 ClickSensetivity = 0.04
+#MEDIAPLAYERMODE Sensetivity
+PoseRecSensetivity = 0.3 #More for smaller hands and longer distances
+
+# Constants
+SMOOTHING_WINDOW_SIZE = 2 #More stable but high latency
 
 # Set up video capture
 cap = cv2.VideoCapture(0)
@@ -41,7 +43,7 @@ mpDraw = mp.solutions.drawing_utils
 index_finger_history = deque(maxlen=SMOOTHING_WINDOW_SIZE)
 prew_wrist_x = None
 
-while True:
+def process_frame():
     success, img = cap.read()
 
     # Convert the image to RGB for processing
@@ -94,8 +96,9 @@ while True:
             avg_index_finger_x = sum(p[0] for p in index_finger_history) // len(index_finger_history)
             avg_index_finger_y = sum(p[1] for p in index_finger_history) // len(index_finger_history)
 
-            
+            print(stophand1)
             print(stophand2)
+            print(stophand3)
             #PlayerMode
             print(wrist_y)
             if PlayerMode:
@@ -106,26 +109,34 @@ while True:
                     minHight = 1000
 
                 if wrist_y < minHight:
-                    if stophand1 > 0.4 and stophand2 > 0.4 and stophand3 > 0.3: #Pause
+                    if stophand1 > PoseRecSensetivity and stophand2 > PoseRecSensetivity and stophand3 > PoseRecSensetivity: #Pause
+                        show_notification(root,"Notification space", "Pause")
+                        root.update()
                         print("pause")
                         pyautogui.press('space')
                         time.sleep(2)
-                    elif stophand1 > 0.4 and stophand2 > 0.4:
+                    elif stophand1 > PoseRecSensetivity and stophand2 > PoseRecSensetivity:
+                        show_notification(root,"Notification Next", "Next")
+                        root.update()
                         print('Next >>')     
                         pyautogui.keyDown('shift')
                         pyautogui.keyDown('n')
-                        time.sleep(2)
+                        time.sleep(0.1)
                         pyautogui.keyUp('n')
                         pyautogui.keyUp('shift')
-                    elif index_finger.x < wrist.x and stophand2 < 0.6: #Right
+                        time.sleep(2)
+                    elif index_finger.x < wrist.x and stophand2 < 0.6: #Right   
+                        show_notification(root,"Notification Right", "Right")
+                        root.update()
                         print("right >")
                         pyautogui.press('right')
-                        #show_notification(root,"Notification Right", "Right")
-                        time.sleep(1)
-                    elif index_finger.x > wrist.x and stophand2 < 0.6: #Left
+                        time.sleep(0.5)
+                    elif index_finger.x > wrist.x and stophand2 < 0.6: #Left 
+                        show_notification(root,"Notification Left", "Left")
+                        root.update()
                         print("< left")  
                         pyautogui.press('left')
-                        time.sleep(1)
+                        time.sleep(0.5)
             else:
                 # Move the mouse cursor to the average position
                 if distancehand > 0.3: # if index finger open
@@ -140,8 +151,13 @@ while True:
                     elif distanceDoubleClick < ClickSensetivity:
                         pyautogui.doubleClick()
                         time.sleep(1)
-
-            
     if Show:
         cv2.imshow("Image", img)
         cv2.waitKey(1)
+
+    # Schedule the next iteration of the main loop
+    root.after(1, process_frame)
+
+# Start the main loop
+process_frame()
+root.mainloop()
