@@ -48,7 +48,8 @@ timer = 0
 def settimer(timervalue):
     global timer 
     timer = timervalue
-
+    
+# PROCESS FRAME
 def process_frame():
     success, img = cap.read()
     global timer
@@ -90,13 +91,14 @@ def process_frame():
             stophand3 = ((ring_finger.x - wrist.x)**2 + (ring_finger.y - wrist.y)**2)**0.5
 
             # Draw a line between the fingers
-            color1 = (0,distancehand* 255,255 - (distancehand*255))
-            color2 = (0,distanceclick* 255,255 - (distanceclick*255))
-            color3 = (0,distanceDoubleClick* 255,255 - (distanceDoubleClick*255))
-            cv2.line(img, (index_finger_x, index_finger_y), (wrist_x, wrist_y), color1, 2)
-            cv2.line(img, (wrist_x, wrist_y), (index_finger_x, index_finger_y), color3, 2)
-            cv2.line(img, (wrist_x, wrist_y), (ring_finger_x, ring_finger_y), color3, 2)
-            cv2.line(img, (wrist_x, wrist_y), (middle_finger2_x, middle_finger2_y), color3, 2)
+            color1 = (0,distancehand* 255,255 - (distancehand*255) * 2)
+            color2 = (0,(distanceclick* 255)*3,255 - (distanceclick*255) * 2)
+            color3 = (0,(distanceDoubleClick* 255)*3,255 - (distanceDoubleClick*255) * 2)
+            color5 = (0,stophand2*255,255-(stophand2*255) * 2)
+            color4 = (0,stophand3 *255,255 - (stophand3*255) * 2)
+            cv2.line(img, (wrist_x, wrist_y), (index_finger_x, index_finger_y), color1, 2)
+            cv2.line(img, (wrist_x, wrist_y), (middle_finger2_x, middle_finger2_y), color5, 2)
+            cv2.line(img, (wrist_x, wrist_y), (ring_finger_x, ring_finger_y), color4, 2)
             cv2.line(img, (thumb_x, thumb_y), (middle_finger_x, middle_finger_y), color2, 2)
             cv2.line(img, (thumb_x, thumb_y), (middle_finger2_x, middle_finger2_y), color3, 2)
 
@@ -126,7 +128,7 @@ def process_frame():
                         print("pause")
                         pyautogui.press('space')
                         settimer(30)
-                    elif stophand1 > PoseRecSensetivity and stophand2 > PoseRecSensetivity and timer<1:
+                    elif stophand1 > PoseRecSensetivity  + 0.1 and stophand2 > PoseRecSensetivity + 0.1 and timer<1:
                         show_notification(root,"Notification Next", "Next")
                         root.update()
                         print('Next >>')     
@@ -141,7 +143,7 @@ def process_frame():
                         root.update()
                         print("right >")
                         pyautogui.press('right')
-                        settimer(10)
+                        settimer(5)
                     elif index_finger.x > wrist.x and stophand2 < 0.6 and timer<1: #Left 
                         show_notification(root,"Notification Left", "Left")      
                         root.update()
@@ -157,11 +159,11 @@ def process_frame():
                     # Perform a click if the distance between the fingers is below a threshold
                     if distanceclick < ClickSensetivity and timer<1:
                         pyautogui.mouseDown()
-                        settimer(20)
+                        settimer(5)
                         pyautogui.mouseUp()
                     elif distanceDoubleClick < ClickSensetivity and timer<1:
                         pyautogui.doubleClick()
-                        settimer(20)
+                        settimer(10)
     if Show:
         cv2.imshow("Image", img)
         cv2.waitKey(1)

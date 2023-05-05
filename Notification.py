@@ -27,9 +27,6 @@ class Notification(tk.Toplevel):
         # set the opacity of the message label
         self.attributes("-alpha", 0.8)
         
-        #close_button = tk.Button(frame, text="Close", command=self.destroy, bg='#FFFFFF', fg='#333333')
-        #close_button.pack(side=tk.BOTTOM, pady=5, padx=10)
-        
         # set a timer to close the notification after 5 seconds
         self.after(4000, self.destroy)
         
@@ -55,19 +52,3 @@ class Notification(tk.Toplevel):
 def show_notification(root, title, message):    
     # create the notification
     Notification(root,title, message)
-
-    
-# # create a hidden root window
-# root = tk.Tk()
-# root.withdraw()
-
-# # create some test notifications
-# show_notification(root,"Notification 1", "Left")
-# show_notification(root,"Notification 2", "Right")
-# show_notification(root,"Notification 3", "Close")
-# show_notification(root,"Notification 3", "This is the third notification.")
-# show_notification(root,"Notification 3", "This is the third notification.")
-
-# root.mainloop()
-
-# print(2+2)
