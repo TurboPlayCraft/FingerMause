@@ -1,4 +1,5 @@
 import cv2
+import keyboard
 import mediapipe as mp
 import pyautogui
 from collections import deque
@@ -52,7 +53,7 @@ def settimer(timervalue):
 # PROCESS FRAME
 def process_frame():
     success, img = cap.read()
-    global timer
+    global timer,PlayerMode
     timer-=1
     print(timer)
     # Convert the image to RGB for processing
@@ -167,6 +168,15 @@ def process_frame():
     if Show:
         cv2.imshow("Image", img)
         cv2.waitKey(1)
+      
+    #check if pressed M key
+    if keyboard.is_pressed('m') and timer<1:
+        settimer(10)
+        PlayerMode = not PlayerMode
+        if PlayerMode:
+            show_notification(root,"Notification Mode","PlayerMode is ON")
+        else:
+            show_notification(root,"Notification Mode","PlayerMode is OFF")
 
     # Schedule the next iteration of the main loop
     root.after(1, process_frame)
