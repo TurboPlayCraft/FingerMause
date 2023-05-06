@@ -31,15 +31,16 @@ class Notification(tk.Toplevel):
         self.after(4000, self.destroy)
         
         # add the notification to the list of open notifications
-        Notification.open_notifications.append(self)
-        # adjust the position of the new notification based on the number of open notifications
-        x = self.winfo_screenwidth() - Notification.WIDTH - 20
-        y = 20 + (len(Notification.open_notifications) - 1) * (Notification.HEIGHT + 10)
-        self.geometry("+{}+{}".format(x, y))
+        Notification.open_notifications.insert(0,self)
+        for i, notification in enumerate(Notification.open_notifications):
+            x = self.winfo_screenwidth() - Notification.WIDTH - 20
+            #y = 20 + (len(Notification.open_notifications) - 1) * (Notification.HEIGHT + 10)
+            y = 20 + i * (Notification.HEIGHT + 10)
+            notification.geometry("+{}+{}".format(x, y))
 
     def destroy(self):
         super().destroy()
-        
+
         # remove the notification from the list of open notifications
         Notification.open_notifications.remove(self)
         
@@ -52,3 +53,13 @@ class Notification(tk.Toplevel):
 def show_notification(root, title, message):    
     # create the notification
     Notification(root,title, message)
+    root.update()
+
+# # create a hidden root window
+# root = tk.Tk()
+# root.withdraw()
+
+# show_notification(root,"test1","1111111111")
+# show_notification(root,"test2","2222222222")
+# time.sleep(1)
+# show_notification(root,"test3","3333333333")

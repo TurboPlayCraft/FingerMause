@@ -2,15 +2,16 @@ import cv2
 import keyboard
 import mediapipe as mp
 import pyautogui
+from CameraSearch import *
 from collections import deque
 from Notification import *
 import tkinter as tk
 import time
 
 #PlayerMode
-Show = False
+Show = True
 PlayerMode = True
-OnlyUp = True
+OnlyUp = False
 
 #MAUSEMODE Sensetivity
 MauseFingerSensetivity = 0.3 
@@ -22,7 +23,8 @@ PoseRecSensetivity = 0.3 #More for smaller hands and longer distances
 SMOOTHING_WINDOW_SIZE = 2 #More stable but high latency
 
 # Set up video capture
-cap = cv2.VideoCapture(0)
+cam = FindCameras()
+cap = cv2.VideoCapture(cam)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 pyautogui.FAILSAFE = False
@@ -118,7 +120,7 @@ def process_frame():
             if PlayerMode:
                 #if hands is up in air
                 if OnlyUp:
-                    minHight = 300
+                    minHight = 200
                 else:
                     minHight = 1000
 
